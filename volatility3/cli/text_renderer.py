@@ -7,7 +7,7 @@ import json
 import logging
 import random
 import string
-import sys
+import sys,io
 from functools import wraps
 from typing import Any, Callable, Dict, List, Tuple
 from volatility3.cli import text_filter
@@ -163,9 +163,7 @@ class QuickTextRenderer(CLIRenderer):
         Args:
             grid: The TreeGrid object to render
         """
-        # TODO: Docstrings
-        # TODO: Improve text output
-        outfd = sys.stdout
+        outfd = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
         line = []
         for column in grid.columns:
@@ -239,11 +237,11 @@ class CSVRenderer(CLIRenderer):
         Args:
             grid: The TreeGrid object to render
         """
-        outfd = sys.stdout
+        # Redirect stdout to handle utf-8 encoding
+        outfd = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
         header_list = ["TreeDepth"]
         for column in grid.columns:
-            # Ignore the type because namedtuples don't realize they have accessible attributes
             header_list.append(f"{column.name}")
 
         writer = csv.DictWriter(
